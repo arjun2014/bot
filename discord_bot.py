@@ -3,26 +3,33 @@ from discord.ext import commands
 import random
 import datetime
 import feedparser
+import os
+from dotenv import load_dotenv
+
+# ---------------------------
+# Load Environment Variables
+# ---------------------------
+# This will load variables from a .env file if it exists (for local testing)
+load_dotenv()
+
+# Get the bot token from environment variables (Render will use this automatically)
+YOUR_BOT_KEY = os.getenv("DISCORD_BOT_TOKEN")
+
+if not YOUR_BOT_KEY:
+    raise ValueError("Bot token not found! Set DISCORD_BOT_TOKEN in Render or .env file.")
 
 # ---------------------------
 # Bot Configuration
 # ---------------------------
-
-# Hardcoded token
-YOUR_BOT_KEY = "YOUR_BOT_TOKEN_HERE"  # <- replace this with your bot token
-
-# Set up intents
 intents = discord.Intents.default()
 intents.members = True  # Required for on_member_join
 intents.message_content = True  # Required for commands
 
-# Define the bot
 bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
 # ---------------------------
 # Bot Events
 # ---------------------------
-
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Game(name="The Internet Times 📡"))
@@ -61,9 +68,8 @@ async def on_command_error(ctx, error):
         await ctx.send("An unexpected error occurred. Please try again later.")
 
 # ---------------------------
-# Help Command
+# Commands (Help, Fun, Utility, Moderation)
 # ---------------------------
-
 @bot.command()
 async def help(ctx):
     embed = discord.Embed(
@@ -79,10 +85,6 @@ async def help(ctx):
 
     embed.set_footer(text="Use !<command> to run a command. Example: !ping")
     await ctx.send(embed=embed)
-
-# ---------------------------
-# General & Fun Commands
-# ---------------------------
 
 @bot.command()
 async def ping(ctx):
@@ -161,13 +163,7 @@ async def poll(ctx, question: str, *options: str):
         await poll_message.add_reaction(reactions[i])
 
 # ---------------------------
-# Utility & Moderation Commands
-# ---------------------------
-
-# (Keep all your avatar, userinfo, serverinfo, kick, ban, unban, clear commands unchanged)
-
-# ---------------------------
 # Run the Bot
 # ---------------------------
 if __name__ == "__main__":
-    bot.run("MTQxNjMyMjYwNDA3MDk5NDAzMg.GqnWzi.R897-UZpz98ghM8Nb7MA0DsLPRFuzJSy9r5b9Y")
+    bot.run(YOUR_BOT_KEY)
